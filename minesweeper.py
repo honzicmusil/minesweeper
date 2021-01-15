@@ -1,19 +1,24 @@
 import pygame, sys, random
 from enum import Enum
+from tkinter import *
+from tkinter import messagebox
 
 
-# Pomocná třída enum
-class MineEvent(Enum):
+# Pomocná třída enum na stav miny
+class MineFieldPositionStatus(Enum):
     HIDDEN = 0
     CLICKED = 1
     FLAGGED = 2
+    MINE = 3
+    BOOM = 4
 
 
 # konstanty a fce které neinteragují s pygame!
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-RED = (255, 0, 0)
+GREEN = (18, 173, 42)
+RED = (202, 0, 42)
+BLUE = (80, 133, 188)
 
 WINDOW_WIDTH = 610
 WINDOW_HEIGHT = 610
@@ -21,17 +26,32 @@ WINDOW_HEIGHT = 610
 MINE_SIZE = 30
 FPS = 45
 MARGIN = 5
+NUMBER_OF_MINES = 20
 
 
 # fce které interagují s pygame!
 def init_minefield():
     matrix = []
-    for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
+    row_range = WINDOW_WIDTH // (MINE_SIZE + MARGIN)
+    column_range = WINDOW_HEIGHT // (MINE_SIZE + MARGIN)
+
+    for row in range(row_range):
         matrix.append([])
-        for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
-            matrix[row].append(MineEvent.HIDDEN)
+        for column in range(column_range):
+            matrix[row].append(MineFieldPositionStatus.HIDDEN)
     # pomocí fce random obarvíme odkryjeme jedno náhodné políčko ve hře jako výchozí bod
-    matrix[random.randrange(0, WINDOW_WIDTH // (MINE_SIZE + MARGIN))][random.randrange(0, WINDOW_HEIGHT // (MINE_SIZE + MARGIN))] = MineEvent.CLICKED
+    matrix[random.randrange(0, row_range)][random.randrange(0, column_range)] = MineFieldPositionStatus.CLICKED
+
+    actual_number = 0
+
+    while actual_number != NUMBER_OF_MINES:
+
+        r = random.randrange(0, row_range)
+        c = random.randrange(0, column_range)
+
+        if matrix[r][c] == MineFieldPositionStatus.HIDDEN:
+            matrix[r][c] = MineFieldPositionStatus.MINE
+            actual_number = actual_number + 1
 
     return matrix
 
@@ -41,10 +61,12 @@ def render_result():
     for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
         for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
             color = WHITE
-            if minefield[row][column] == MineEvent.CLICKED:
-                color = RED
-            elif minefield[row][column] == MineEvent.FLAGGED:
+            if minefield[row][column] == MineFieldPositionStatus.CLICKED:
+                color = BLUE
+            elif minefield[row][column] == MineFieldPositionStatus.FLAGGED:
                 color = GREEN
+            elif minefield[row][column] == MineFieldPositionStatus.BOOM:
+                color = RED
             pygame.draw.rect(screen,
                              color,
                              [(MARGIN + MINE_SIZE) * column + MARGIN,
@@ -105,12 +127,14 @@ while running:
             column = mouse_position[0] // (MINE_SIZE + MARGIN)
             print("Position Clicked: {} Our array coordinates: row - {}, column - {} Button: {}".format(mouse_position, row, column, event.button))
             if event.button == 1:
-                # Nastavím hodnotu, že bylo na pozici kliknuto
-                minefield[row][column] = MineEvent.CLICKED
+                if minefield[row][column] == MineFieldPositionStatus.MINE:
+                    minefield[row][column] = MineFieldPositionStatus.BOOM
+                    Tk().wm_withdraw()  # to hide the main window
+                    messagebox.showinfo("Thats pity pal", "Booooooooooooooooooooooom!!!!")
+                else:
+                    minefield[row][column] = MineFieldPositionStatus.CLICKED
             elif event.button == 3:
-                minefield[row][column] = MineEvent.FLAGGED
-
-
+                minefield[row][column] = MineFieldPositionStatus.FLAGGED
 
     # Update
     # my_sprites.update()
