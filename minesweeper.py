@@ -43,6 +43,8 @@ def render_result():
             color = WHITE
             if minefield[row][column] == MineEvent.CLICKED:
                 color = RED
+            elif minefield[row][column] == MineEvent.FLAGGED:
+                color = GREEN
             pygame.draw.rect(screen,
                              color,
                              [(MARGIN + MINE_SIZE) * column + MARGIN,
