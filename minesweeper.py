@@ -143,7 +143,8 @@ sprites = [
     sprite.SpriteStripAnim(atomic_explosion_path, (0, 233, 320, 232), 5, 1, False, FRAMES) +
     sprite.SpriteStripAnim(atomic_explosion_path, (0, 465, 320, 232), 5, 1, False, FRAMES) +
     sprite.SpriteStripAnim(atomic_explosion_path, (0, 697, 320, 232), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 5, 1, False, FRAMES),
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 1161, 320, 232), 5, 1, False, FRAMES),
     sprite.SpriteStripAnim(fireworks_path, (0, 0, 256, 256), 5, 1, False, FRAMES) +
     sprite.SpriteStripAnim(fireworks_path, (0, 257, 256, 256), 5, 1, False, FRAMES) +
     sprite.SpriteStripAnim(fireworks_path, (0, 513, 256, 256), 5, 1, False, FRAMES) +
@@ -168,6 +169,7 @@ image = sprites[0].next()
 image2 = sprites[1].next()
 isExploded = False
 isExplodeSoundPlaying = False
+isFireworkSoundPlaying = False
 isWin = False
 # cyklus udrzujici okno v chodu
 while running:
@@ -219,6 +221,10 @@ while running:
     # TODO implement switcher???
     if isWin:
         try:
+            if isFireworkSoundPlaying:
+                pygame.mixer.music.load('resources/sounds/Fireworks.mp3')
+                pygame.mixer.music.play(0)
+                isFireworkSoundPlaying = False
             image2 = sprites[1].next()
             screen.blit(image2, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
         except StopIteration as e:
