@@ -224,8 +224,22 @@ while running:
             elif event.button == 3:
                 if minefield[row][column] == MineFieldPositionStatus.MINE:
                     minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_MINE
-                else:
+                    is_last_deactivated = True
+
+                    for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
+                        for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
+                            if minefield[row][column] == MineFieldPositionStatus.MINE \
+                                    or minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
+                                is_last_deactivated = False
+
+                    if is_last_deactivated:
+                        is_win = True
+                elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                     minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE
+                elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
+                    minefield[row][column] = MineFieldPositionStatus.HIDDEN
+                elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
+                    minefield[row][column] = MineFieldPositionStatus.MINE
 
     # Update
     my_sprites.update()
