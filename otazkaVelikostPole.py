@@ -1,60 +1,120 @@
-from pygame_functions import *
-
-
-def velikostPole(maxWidth, maxHeigth):
-    # zeptá se uzivatele na velikost minového pole
-    # vrací šířku a výsku pole
+def size_mines_field(max_width, max_heigth):
+    # zeptá se uzivatele na velikost minového pole a počet min
+    # vrací šířku, výšku pole a počet min
     # typ vracených hodnot je iteger
 
-    global heigth
-    screenSize(maxWidth, maxHeigth)
+    import tkinter as tk
+    all_filled = False # proměná k otestování návratu, zda nebyl doalog ukončen dříve
 
-    otazka = makeLabel(" Zadejte velikost minového pole ", 40, 10, 10, "blue", "", "clear")
-    showLabel(otazka)
+    root = tk.Tk()
 
-    wordBox1 = makeTextBox(30, 80, 200, 0, " šířka (max " + str(maxWidth) + ")", 3, 24)
-    showTextBox((wordBox1))
+    canvas1 = tk.Canvas(root, width=400, height=300)
+    canvas1.pack()
 
-    # uživatelský vstup - šířka
-    # cyklus dokud nezada uživatel číslo > 0 a menší než max
-    chyba = True
-    while chyba:
-        width = textBoxInput(wordBox1)
+    entry_width = tk.Entry(root)  # Witht
+    entry_heigth = tk.Entry(root)  # Heigth
+    entry_mines = tk.Entry(root)  # Count mines
+
+    label1 = tk.Label(root, text="Enter the size of mines field")
+    label1.config(font=('Arial', 20))
+    canvas1.create_window(200, 30, window=label1)
+
+    label2 = tk.Label(root, text="Width")
+    label3 = tk.Label(root, text="Hight")
+    label4 = tk.Label(root, text="Count mines")
+
+    canvas1.create_window(118, 80, window=label2)
+    canvas1.create_window(200, 80, window=entry_width)
+
+    canvas1.create_window(118, 100, window=label3)
+    canvas1.create_window(200, 100, window=entry_heigth)
+
+    canvas1.create_window(98, 120, window=label4)
+    canvas1.create_window(200, 120, window=entry_mines)
+
+    def check_area():
+        global width, heigth, count_mines
+        nonlocal all_filled
+
+        width = entry_width.get()
+        heigth = entry_heigth.get()
+        count_mines = entry_mines.get()
+
+        # kontrola šířky číslo > 0 a menší než max
+        err_width = True
         try:
             int(width)
-            if (int(width) < 1 or int(width) > maxWidth):
-                chyba = True
+            if (int(width) < 1) or (int(width) > max_width):
+                err_width = True
             else:
-                chyba = False
+                err_width = False
         except:
-            ValueError
+            err_width = True
 
-    # zobrazí zadanou šířku
-    labelWidth = makeLabel(width, 40, 40, 85, "blue", "", "clear")
-    showLabel(labelWidth)
+        if err_width:
+            label5 = tk.Label(root, text="Please enter Width - the number in interval <1," + str(max_width) + "> ")
+        else:
+            label5 = tk.Label(root, text=200 * " ")
 
-    # uživatelský vstup - výška
-    wordBox2 = makeTextBox(30, 150, 200, 0, " výška (max " + str(maxHeigth) + ")", 3, 24)
+        canvas1.create_window(200, 150, window=label5)
 
-    # cyklus dokud nezada uživatel číslo > 0 a menší než max
-    chyba = True
-    while chyba:
-        heigth = textBoxInput(wordBox2)
+        # kontrola výšky číslo > 0 a menší než max
+        err_heigth = True
         try:
             int(heigth)
-            chyba = False
-            int(heigth)
-            if (int(heigth) < 1 or int(heigth) > maxHeigth):
-                chyba = True
+            if (int(heigth) < 1) or (int(heigth) > max_heigth):
+                err_heigth = True
             else:
-                chyba = False
+                err_heigth = False
         except:
-            ValueError
+            err_heigth = True
 
-    return (int(width), int(heigth))
+        if err_heigth:
+            label6 = tk.Label(root, text="Please enter Heigth - the number in interval <1," + str(max_heigth) + "> ")
+        else:
+            label6 = tk.Label(root, text=200 * " ")
+
+        canvas1.create_window(200, 170, window=label6)
+
+        # kontrola počtu min číslo > 0 a menší než (šířka x výška)
+        err_mines = True
+        try:
+            int(count_mines)
+            if (int(count_mines) < 1) or (int(count_mines) > int(heigth) * int(width)):
+                err_mines = True
+            else:
+                err_mines = False
+        except:
+            err_mines = True
+
+        if (not err_width and not err_heigth) and err_mines:
+            label7 = tk.Label(root, text="Please enter Count of mines - the number in interval <1," + str(
+                int(heigth) * int(width)) + "> ")
+        else:
+            label7 = tk.Label(root, text=200 * " ")
+
+        canvas1.create_window(200, 190, window=label7)
+
+        if (not err_width and not err_heigth and not err_mines):
+            all_filled = True
+            print("OK ", width, heigth, count_mines)
+            root.destroy()
+
+    button1 = tk.Button(text='OK', command=check_area)
+    canvas1.create_window(200, 230, window=button1)
+
+    root.mainloop()
+
+    if all_filled:
+        return (int(width), int(heigth), int(count_mines))
+    else:
+        return ("")
+
+
 
 # zavolám dialog velikosti minového pole a vytisku co uživatel zadal
 # vstupní parametry jsou maximální rozměry minového pole
 # 1. - max šířka minového pole
 # 2. - max výška minového pole
-# print(velikostPole(800,600))
+# 3. - počet min
+print(size_mines_field(800, 600))
