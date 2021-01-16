@@ -191,6 +191,7 @@ is_win = False
 # velikostPole = otazkaVelikostPole.velikostPole(WINDOW_WIDTH, WINDOW_HEIGHT)
 # cyklus udrzujici okno v chodu
 while running:
+    # game_menu.game_intro(screen)
     # FPS kontrola / jeslti bezi dle rychlosti!
     clock.tick(FPS)
 
@@ -272,7 +273,7 @@ while running:
             # exploded = False
             # TODO log.debug only?
             print("Animation stopped.")
-    if not is_exploded or is_win:
+    if not (is_exploded or is_win):
         render_result()
     pygame.display.flip()
     pygame.display.update()
