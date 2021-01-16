@@ -1,6 +1,6 @@
 import random
 from enum import Enum
-from tkinter import *
+from pygame_functions import *
 
 import pygame
 
@@ -10,10 +10,11 @@ from data import sprite
 # Pomocná třída enum na stav miny
 class MineFieldPositionStatus(Enum):
     HIDDEN = -1
-    CLICKED = -2
-    FLAGGED_AND_WAS_MINE = -3
-    FLAGGED_AND_WAS_NOT_MINE = -4
-    MINE = -5
+    EMPTY = -2
+    CLICKED = -3
+    FLAGGED_AND_WAS_MINE = -4
+    FLAGGED_AND_WAS_NOT_MINE = -5
+    MINE = -6
 
 
 # konstanty a fce které neinteragují s pygame!
@@ -49,19 +50,22 @@ def check_surrounding(cell, matrix):
 
     is_surrounded = False
     for move in possible_moves:
-
-        if len(matrix) > (cell[0] + move[0]) >= 0 and len(matrix[0]) > (cell[1] + move[1]) >= 0:
+        if len(matrix) > (cell[0] + move[0]) > 0 and len(matrix[0]) > (cell[1] + move[1]) > 0:
             if matrix[cell[0] + move[0]][cell[1] + move[1]] == MineFieldPositionStatus.MINE:
+                print(cell)
+                matrix[cell[0]][cell[1]] = MineFieldPositionStatus.CLICKED
                 is_surrounded = True
-                break
 
-    if not is_surrounded and len(matrix) > (cell[0]) >= 0 and len(matrix[0]) > (cell[1]) >= 0 and \
-            matrix[cell[0]][cell[1]] != MineFieldPositionStatus.CLICKED:
-        print(cell)
-        matrix[cell[0]][cell[1]] = MineFieldPositionStatus.CLICKED
+    if not is_surrounded and len(matrix) > (cell[0]) >= 0 and len(matrix[0]) > (cell[1]) >= 0 \
+            and matrix[cell[0]][cell[1]] != MineFieldPositionStatus.EMPTY \
+            and matrix[cell[0]][cell[1]] != MineFieldPositionStatus.CLICKED:
+
+        matrix[cell[0]][cell[1]] = MineFieldPositionStatus.EMPTY
+
         for move in possible_moves:
-            target = [cell[0] + move[0], cell[1] + move[1]]
-            check_surrounding(target, matrix)
+            if len(matrix) > (cell[0] + move[0]) >= 0 and len(matrix[0]) > (cell[1] + move[1]) >= 0:
+                target = [cell[0] + move[0], cell[1] + move[1]]
+                check_surrounding(target, matrix)
 
 
 # fce které interagují s pygame!
@@ -99,6 +103,8 @@ def render_result():
         for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
             color = GREY
             if minefield[row][column] == MineFieldPositionStatus.CLICKED:
+                color = BLUE
+            elif minefield[row][column] == MineFieldPositionStatus.EMPTY:
                 color = GREEN
             elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE \
                     or minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
@@ -167,10 +173,10 @@ sprites[0].iter()
 sprites[1].iter()
 image = sprites[0].next()
 image2 = sprites[1].next()
-isExploded = False
-isExplodeSoundPlaying = False
-isFireworkSoundPlaying = False
-isWin = False
+is_firework_sound_playing = False
+is_win = False
+is_exploded = False
+is_explode_sound_playing = False
 # cyklus udrzujici okno v chodu
 while running:
     # FPS kontrola / jeslti bezi dle rychlosti!
@@ -199,11 +205,9 @@ while running:
                                                                                                         event.button))
             if event.button == 1:
                 if minefield[row][column] == MineFieldPositionStatus.MINE:
-                    # minefield[row][column] = MineFieldPositionStatus.BOOM
                     Tk().wm_withdraw()  # to hide the main window
-                    isExplodeSoundPlaying = True
-                    isExploded = True
-                    # messagebox.showinfo("Thats pity pal", "Booooooooooooooooooooooom!!!!")
+                    is_explode_sound_playing = True
+                    is_exploded = True
                 elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                     check_surrounding([row, column], minefield)
             elif event.button == 3:
@@ -216,24 +220,23 @@ while running:
     my_sprites.update()
 
     # Render
-    # screen.fill(BLACK)
     my_sprites.draw(screen)
     # TODO implement switcher???
-    if isWin:
+    if is_win:
         try:
-            if isFireworkSoundPlaying:
+            if is_firework_sound_playing:
                 pygame.mixer.music.load('resources/sounds/Fireworks.mp3')
                 pygame.mixer.music.play(0)
-                isFireworkSoundPlaying = False
+                is_firework_sound_playing = False
             image2 = sprites[1].next()
             screen.blit(image2, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
         except StopIteration as e:
             # exploded = False
             # TODO log.debug only?
             print("Animation stopped.")
-    if isExploded:
+    if is_exploded:
         try:
-            if isExplodeSoundPlaying:
+            if is_explode_sound_playing:
                 pygame.mixer.music.load('resources/sounds/Explosion3.wav')
                 pygame.mixer.music.play(0)
                 isExplodeSoundPlaying = False
@@ -244,7 +247,7 @@ while running:
             # exploded = False
             # TODO log.debug only?
             print("Animation stopped.")
-    if not isExploded | isWin:
+    if not is_exploded or is_win:
         render_result()
     pygame.display.flip()
     pygame.display.update()
