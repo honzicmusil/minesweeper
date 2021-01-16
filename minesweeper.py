@@ -173,10 +173,12 @@ sprites[0].iter()
 sprites[1].iter()
 image = sprites[0].next()
 image2 = sprites[1].next()
-is_firework_sound_playing = False
-is_win = False
 is_exploded = False
 is_explode_sound_playing = False
+is_firework_sound_playing = False
+is_win = False
+
+# velikostPole = otazkaVelikostPole.velikostPole(WINDOW_WIDTH, WINDOW_HEIGHT)
 # cyklus udrzujici okno v chodu
 while running:
     # FPS kontrola / jeslti bezi dle rychlosti!
@@ -238,7 +240,7 @@ while running:
             if is_explode_sound_playing:
                 pygame.mixer.music.load('resources/sounds/Explosion3.wav')
                 pygame.mixer.music.play(0)
-                isExplodeSoundPlaying = False
+                is_explode_sound_playing = False
             # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
             image = sprites[0].next()
             screen.blit(image, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
