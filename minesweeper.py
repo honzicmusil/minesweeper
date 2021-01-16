@@ -178,7 +178,8 @@ running = True
 # nastaveni animace
 sprites[0].iter()
 image = sprites[0].next()
-exploded = False
+isExploded = False
+isExplodeSoundPlaying = False
 # cyklus udrzujici okno v chodu
 while running:
     # FPS kontrola / jeslti bezi dle rychlosti!
@@ -207,8 +208,9 @@ while running:
                 if minefield[row][column] == MineFieldPositionStatus.MINE:
                     # minefield[row][column] = MineFieldPositionStatus.BOOM
                     Tk().wm_withdraw()  # to hide the main window
-                    exploded = True
-                    messagebox.showinfo("Thats pity pal", "Booooooooooooooooooooooom!!!!")
+                    isExplodeSoundPlaying = True
+                    isExploded = True
+                    # messagebox.showinfo("Thats pity pal", "Booooooooooooooooooooooom!!!!")
                 elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                     check_surrounding([row, column], minefield)
             elif event.button == 3:
@@ -223,16 +225,20 @@ while running:
     # Render
     # screen.fill(BLACK)
     my_sprites.draw(screen)
-    if exploded:
+    if isExploded:
         try:
             image = sprites[0].next()
             # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
+            if isExplodeSoundPlaying:
+                pygame.mixer.music.load('resources/sounds/Explosion3.wav')
+                pygame.mixer.music.play(0)
+                isExplodeSoundPlaying = False
             screen.blit(image, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
         except StopIteration as e:
             # exploded = False
             # TODO log.debug only?
             print("Animation stopped.")
-    if not exploded:
+    if not isExploded:
         render_result()
 
     pygame.display.flip()
