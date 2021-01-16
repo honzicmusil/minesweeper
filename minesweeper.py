@@ -159,7 +159,7 @@ def game_intro():
 
         nadpis = myfont.render("Triple Jan MineSweeper", True, WHITE)
 
-        new_game_inactive = myfont.render("New GAME", True, WHITE)
+        new_game_inactive = myfont.render("NEW GAME", True, WHITE)
         new_game_active = myfont.render("NEW GAME", True, RED)
 
         quit_game_inactive = myfont.render("QUIT GAME", True, WHITE)
@@ -302,7 +302,7 @@ def run_game():
         if is_win:
             try:
                 if is_firework_sound_playing:
-                    pygame.mixer.music.load('resources/sounds/Fireworks.mp3')
+                    pygame.mixer.music.load('resources/sounds/Firework.mp3')
                     pygame.mixer.music.play(0)
                     is_firework_sound_playing = False
                 image2 = sprites[1].next()
