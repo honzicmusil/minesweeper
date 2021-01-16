@@ -75,7 +75,7 @@ class SpriteStripAnim(object):
                 self.i = 0
         image = self.images[self.i]
         self.f -= 1
-        if self.f == 0:
+        if self.f >= 0:
             self.i += 1
             self.f = self.frames
         return image
