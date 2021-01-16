@@ -48,6 +48,9 @@ if type(get_game_opt) == tuple:
     WINDOW_HEIGHT = get_game_opt[1]
     NUMBER_OF_MINES = get_game_opt[2]
 
+ROW_RANGE = WINDOW_WIDTH // (MINE_SIZE + MARGIN)
+COLUMN_RANGE = WINDOW_HEIGHT // (MINE_SIZE + MARGIN)
+
 NEAR_NEIGHBORHOOD = [
     [-1, -1],
     [-1, 0],
@@ -84,20 +87,18 @@ def check_surrounding(cell, matrix):
 # fce které interagují s pygame!
 def init_minefield():
     matrix = []
-    row_range = WINDOW_WIDTH // (MINE_SIZE + MARGIN)
-    column_range = WINDOW_HEIGHT // (MINE_SIZE + MARGIN)
 
-    for row in range(row_range):
+    for row in range(ROW_RANGE):
         matrix.append([])
-        for column in range(column_range):
+        for column in range(COLUMN_RANGE):
             matrix[row].append(MineFieldPositionStatus.HIDDEN)
 
     actual_number = 0
 
     while actual_number != NUMBER_OF_MINES:
 
-        r = random.randrange(0, row_range)
-        c = random.randrange(0, column_range)
+        r = random.randrange(0, ROW_RANGE)
+        c = random.randrange(0, COLUMN_RANGE)
 
         if matrix[r][c] == MineFieldPositionStatus.HIDDEN:
             matrix[r][c] = MineFieldPositionStatus.MINE
@@ -119,8 +120,8 @@ def get_number_of_mines_around(minefield, row, column):
 
 def render_result(minefield, is_exploded):
     # procházíme celou matici a podle vnitřní hodnoty nastavujeme barvu k vykreslení
-    for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
-        for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
+    for row in range(ROW_RANGE):
+        for column in range(COLUMN_RANGE):
             color = GREY
             if minefield[row][column] == MineFieldPositionStatus.CLICKED:
                 color = BLUE
@@ -139,8 +140,8 @@ def render_result(minefield, is_exploded):
                               MINE_SIZE,
                               MINE_SIZE])
 
-    for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
-        for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
+    for row in range(ROW_RANGE):
+        for column in range(COLUMN_RANGE):
             if minefield[row][column] == MineFieldPositionStatus.CLICKED:
                 text = font.render(str(get_number_of_mines_around(minefield, row, column)), False, BLACK)
                 screen.blit(text,
@@ -288,8 +289,14 @@ def run_game():
                 # sebereme pozici myši po kliku
                 mouse_position = pygame.mouse.get_pos()
                 # přepočteme na souřadnice našeho pole
+                if mouse_position[1] >= WINDOW_WIDTH or mouse_position[0] >= WINDOW_HEIGHT:
+                    continue
                 row = mouse_position[1] // (MINE_SIZE + MARGIN)
                 column = mouse_position[0] // (MINE_SIZE + MARGIN)
+
+                if row >= ROW_RANGE or column >= COLUMN_RANGE:
+                    continue
+
                 print("Position Clicked: {} Our array coordinates: row - {}, column - {} Button: {}".format(
                     mouse_position,
                     row, column,
@@ -307,8 +314,8 @@ def run_game():
                         minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_MINE
                         is_last_deactivated = True
 
-                        for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
-                            for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
+                        for row in range(ROW_RANGE):
+                            for column in range(COLUMN_RANGE):
                                 if minefield[row][column] == MineFieldPositionStatus.MINE \
                                         or minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
                                     is_last_deactivated = False
