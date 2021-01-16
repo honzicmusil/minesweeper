@@ -205,7 +205,6 @@ while running:
                                                                                                         event.button))
             if event.button == 1:
                 if minefield[row][column] == MineFieldPositionStatus.MINE:
-                    Tk().wm_withdraw()  # to hide the main window
                     is_explode_sound_playing = True
                     is_exploded = True
                 elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
