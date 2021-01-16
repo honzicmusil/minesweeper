@@ -51,7 +51,8 @@ def check_surrounding(cell, matrix):
     is_surrounded = False
     for move in NEAR_NEIGHBORHOOD:
         if len(matrix) > (cell[0] + move[0]) > 0 and len(matrix[0]) > (cell[1] + move[1]) > 0:
-            if matrix[cell[0] + move[0]][cell[1] + move[1]] == MineFieldPositionStatus.MINE:
+            if matrix[cell[0] + move[0]][cell[1] + move[1]] == MineFieldPositionStatus.MINE \
+                    or matrix[cell[0] + move[0]][cell[1] + move[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
                 matrix[cell[0]][cell[1]] = MineFieldPositionStatus.CLICKED
                 is_surrounded = True
 
@@ -77,10 +78,6 @@ def init_minefield():
         matrix.append([])
         for column in range(column_range):
             matrix[row].append(MineFieldPositionStatus.HIDDEN)
-
-    # pomocí fce random obarvíme odkryjeme jedno náhodné políčko ve hře jako výchozí bod
-    matrix[random.randrange(0, row_range)][
-        random.randrange(0, column_range)] = MineFieldPositionStatus.CLICKED
 
     actual_number = 0
 
@@ -118,7 +115,7 @@ def render_result():
             elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE \
                     or minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
                 color = YELLOW
-            elif minefield[row][column] == MineFieldPositionStatus.MINE:
+            elif minefield[row][column] == MineFieldPositionStatus.MINE and is_exploded:
                 color = RED
 
             pygame.draw.rect(screen,
@@ -262,6 +259,8 @@ while running:
             print("Animation stopped.")
     if is_exploded:
         try:
+            render_result()
+
             if is_explode_sound_playing:
                 pygame.mixer.music.load('resources/sounds/Explosion3.wav')
                 pygame.mixer.music.play(0)
