@@ -1,4 +1,5 @@
 import random
+import size_mines_field
 from enum import Enum
 
 from data import sprite
@@ -165,13 +166,13 @@ def game_intro():
         quit_game_inactive = myfont.render("QUIT GAME", True, WHITE)
         quit_game_active = myfont.render("QUIT GAME", True, RED)
 
-        titleText = screen.blit(nadpis, (170, 200))  # title is an image
+        titleText = screen.blit(nadpis, ((WINDOW_WIDTH/2)-200, 200))  # title is an image
 
         titleText.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
 
         # button(x, y, w, h, inactive, active, action=None)
-        button(100, 350, 195, 80, new_game_active, new_game_inactive, new_game)
-        button(300, 350, 195, 80, quit_game_active, quit_game_inactive, quit_game)
+        button((WINDOW_WIDTH/2)-100, 300, 200, 35, new_game_active, new_game_inactive, new_game)
+        button((WINDOW_WIDTH/2)-100, 350, 200, 35, quit_game_active, quit_game_inactive, quit_game)
         pygame.display.update()
 
 
@@ -287,6 +288,7 @@ def run_game():
 
                         if is_last_deactivated:
                             is_win = True
+                            is_firework_sound_playing = True
                     elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                         minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE
                     elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
