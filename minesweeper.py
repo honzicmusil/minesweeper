@@ -300,7 +300,6 @@ def run_game():
 
         # Render
         my_sprites.draw(screen)
-        # TODO implement switcher???
         if is_win:
             try:
                 if is_firework_sound_playing:
@@ -310,9 +309,8 @@ def run_game():
                 image2 = sprites[1].next()
                 screen.blit(image2, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
             except StopIteration as e:
-                # exploded = False
-                # TODO log.debug only?
                 print("Animation stopped.")
+                pygame.time.delay(1000)
                 break
         if is_exploded:
             try:
@@ -326,14 +324,9 @@ def run_game():
                 image = sprites[0].next()
                 screen.blit(image, ((WINDOW_WIDTH / 2) - 124, (WINDOW_HEIGHT / 2) - 124))
             except StopIteration as e:
-                # exploded = False
-                # TODO log.debug only?
                 print("Animation stopped.")
-                screen.fill(BLACK)
+                pygame.time.delay(1000)
                 break
-                # new_game_inactive = font.render("NEW GAME", True, WHITE)
-                # new_game_active = font.render("NEW GAME", True, RED)
-                # button(100, 350, 195, 80, new_game_active, new_game_inactive, new_game)
         if not (is_exploded or is_win):
             render_result(is_exploded)
         pygame.display.flip()
