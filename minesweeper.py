@@ -227,6 +227,7 @@ my_sprites = pygame.sprite.Group()
 
 def run_game():
     # start:
+    screen.fill(BLACK)
     running = True
 
     # nastaveni animace
