@@ -302,7 +302,7 @@ def run_game():
         if is_win:
             try:
                 if is_firework_sound_playing:
-                    pygame.mixer.music.load('resources/sounds/Firework.mp3')
+                    pygame.mixer.music.load('resources/sounds/Fireworks.mp3')
                     pygame.mixer.music.play(0)
                     is_firework_sound_playing = False
                 image2 = sprites[1].next()
