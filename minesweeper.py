@@ -56,7 +56,6 @@ def check_surrounding(cell, matrix):
                 is_surrounded = True
                 break
 
-        # print(target)
     if not is_surrounded and len(matrix) > (cell[0]) >= 0 and len(matrix[0]) > (cell[1]) >= 0 and \
             matrix[cell[0]][cell[1]] != MineFieldPositionStatus.CLICKED:
         print(cell)
