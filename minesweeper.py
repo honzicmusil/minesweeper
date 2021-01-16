@@ -91,7 +91,7 @@ def init_minefield():
     return matrix
 
 
-def get_number_of_mines_around(row, column):
+def get_number_of_mines_around(minefield, row, column):
     count = 0
     for neighbor in NEAR_NEIGHBORHOOD:
         if len(minefield) > (row + neighbor[0]) >= 0 and len(minefield[0]) > (column + neighbor[1]) >= 0:
@@ -102,7 +102,7 @@ def get_number_of_mines_around(row, column):
     return count
 
 
-def render_result(is_exploded):
+def render_result(minefield, is_exploded):
     # procházíme celou matici a podle vnitřní hodnoty nastavujeme barvu k vykreslení
     for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
         for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
@@ -127,12 +127,10 @@ def render_result(is_exploded):
     for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
         for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
             if minefield[row][column] == MineFieldPositionStatus.CLICKED:
-                text = font.render(str(get_number_of_mines_around(row, column)), False, BLACK)
+                text = font.render(str(get_number_of_mines_around(minefield, row, column)), False, BLACK)
                 screen.blit(text,
                             ((MARGIN + MINE_SIZE) * column + MARGIN + 11, (MARGIN + MINE_SIZE) * row + MARGIN + 3))
 
-
-minefield = init_minefield()
 
 # Start pygame + start modulů!
 pygame.init()
@@ -227,6 +225,7 @@ my_sprites = pygame.sprite.Group()
 
 def run_game():
     # start:
+    minefield = init_minefield()
     screen.fill(BLACK)
     running = True
 
@@ -314,7 +313,7 @@ def run_game():
                 break
         if is_exploded:
             try:
-                render_result(is_exploded)
+                render_result(minefield, is_exploded)
 
                 if is_explode_sound_playing:
                     pygame.mixer.music.load('resources/sounds/Explosion3.wav')
@@ -328,7 +327,7 @@ def run_game():
                 pygame.time.delay(1000)
                 break
         if not (is_exploded or is_win):
-            render_result(is_exploded)
+            render_result(minefield, is_exploded)
         pygame.display.flip()
         pygame.display.update()
 
