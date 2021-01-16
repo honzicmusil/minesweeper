@@ -35,24 +35,23 @@ FRAMES = FPS / 1
 MARGIN = 5
 NUMBER_OF_MINES = 20
 
+NEAR_NEIGHBORHOOD = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1]
+]
+
 
 def check_surrounding(cell, matrix):
-    possible_moves = [
-        [-1, -1],
-        [-1, 0],
-        [-1, 1],
-        [0, -1],
-        [0, 1],
-        [1, -1],
-        [1, 0],
-        [1, 1]
-    ]
-
     is_surrounded = False
-    for move in possible_moves:
+    for move in NEAR_NEIGHBORHOOD:
         if len(matrix) > (cell[0] + move[0]) > 0 and len(matrix[0]) > (cell[1] + move[1]) > 0:
             if matrix[cell[0] + move[0]][cell[1] + move[1]] == MineFieldPositionStatus.MINE:
-                print(cell)
                 matrix[cell[0]][cell[1]] = MineFieldPositionStatus.CLICKED
                 is_surrounded = True
 
@@ -62,7 +61,7 @@ def check_surrounding(cell, matrix):
 
         matrix[cell[0]][cell[1]] = MineFieldPositionStatus.EMPTY
 
-        for move in possible_moves:
+        for move in NEAR_NEIGHBORHOOD:
             if len(matrix) > (cell[0] + move[0]) >= 0 and len(matrix[0]) > (cell[1] + move[1]) >= 0:
                 target = [cell[0] + move[0], cell[1] + move[1]]
                 check_surrounding(target, matrix)
@@ -97,6 +96,16 @@ def init_minefield():
     return matrix
 
 
+def get_number_of_mines_around(row, column):
+    count = 0
+    for neighbor in NEAR_NEIGHBORHOOD:
+        if len(minefield) > (row + neighbor[0]) >= 0 and len(minefield[0]) > (column + neighbor[1]) >= 0:
+            if minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.MINE \
+                    or minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
+                count = count + 1
+    return count
+
+
 def render_result():
     # procházíme celou matici a podle vnitřní hodnoty nastavujeme barvu k vykreslení
     for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
@@ -111,9 +120,6 @@ def render_result():
                 color = YELLOW
             elif minefield[row][column] == MineFieldPositionStatus.MINE:
                 color = RED
-            text = font.render(str(minefield[row][column].value), False, BLACK)
-
-            screen.blit(text, ((MARGIN + MINE_SIZE) * column + MARGIN, (MARGIN + MINE_SIZE) * row + MARGIN))
 
             pygame.draw.rect(screen,
                              color,
@@ -122,7 +128,11 @@ def render_result():
                               MINE_SIZE,
                               MINE_SIZE])
 
-            screen.blit(text, ((MARGIN + MINE_SIZE) * column + MARGIN + 11, (MARGIN + MINE_SIZE) * row + MARGIN + 3))
+    for row in range(WINDOW_WIDTH // (MINE_SIZE + MARGIN)):
+        for column in range(WINDOW_HEIGHT // (MINE_SIZE + MARGIN)):
+            if minefield[row][column] == MineFieldPositionStatus.CLICKED:
+                text = font.render(str(get_number_of_mines_around(row, column)), False, BLACK)
+                screen.blit(text, ((MARGIN + MINE_SIZE) * column + MARGIN + 11, (MARGIN + MINE_SIZE) * row + MARGIN + 3))
 
 
 minefield = init_minefield()
