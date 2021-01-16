@@ -31,7 +31,7 @@ WINDOW_HEIGHT = 610
 
 MINE_SIZE = 30
 FPS = 60
-FRAMES = FPS / 6
+FRAMES = FPS / 3
 MARGIN = 5
 NUMBER_OF_MINES = 20
 
@@ -140,31 +140,31 @@ atomic_explosion_path = 'resources/images/atomic_bomb_explosion.png'
 # Definice spritu
 # atomic explosion
 sprites = [
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 0, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 0, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 0, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 0, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 0, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 233, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 233, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 233, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 233, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 233, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 465, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 465, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 465, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 465, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 465, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 697, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 697, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 697, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 697, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 697, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 929, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 929, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 929, 320, 232), 1, 1, True, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 929, 320, 232), 1, 1, True, FRAMES)
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 0, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 0, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 0, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 0, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 0, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 233, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 233, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 233, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 233, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 233, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 465, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 465, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 465, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 465, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 465, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 697, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 697, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 697, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 697, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 697, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 929, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 929, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 929, 320, 232), 1, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 929, 320, 232), 1, 1, False, FRAMES)
 ]
 
 # hodiny - FPS CLOCK / heart rate
@@ -225,10 +225,15 @@ while running:
     # screen.fill(BLACK)
     my_sprites.draw(screen)
     if exploded:
-        image = sprites[0].next()
-        # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
-        screen.blit(image, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
-    else:
+        try:
+            image = sprites[0].next()
+            # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
+            screen.blit(image, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
+        except StopIteration as e:
+            # exploded = False
+            # TODO log.debug only?
+            print("Animation stopped.")
+    if not exploded:
         render_result()
 
     pygame.display.flip()
