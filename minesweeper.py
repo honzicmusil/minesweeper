@@ -1,7 +1,11 @@
-import pygame, sys, random
+import random
 from enum import Enum
 from tkinter import *
 from tkinter import messagebox
+
+import pygame
+
+import sprite
 
 
 # Pomocná třída enum na stav miny
@@ -25,6 +29,7 @@ WINDOW_HEIGHT = 610
 
 MINE_SIZE = 30
 FPS = 45
+FRAMES = FPS / 10
 MARGIN = 5
 NUMBER_OF_MINES = 20
 
@@ -40,7 +45,8 @@ def init_minefield():
         for column in range(column_range):
             matrix[row].append(MineFieldPositionStatus.HIDDEN)
     # pomocí fce random obarvíme odkryjeme jedno náhodné políčko ve hře jako výchozí bod
-    matrix[random.randrange(0, row_range)][random.randrange(0, column_range)] = MineFieldPositionStatus.CLICKED
+    matrix[random.randrange(0, row_range)][
+        random.randrange(0, column_range)] = MineFieldPositionStatus.CLICKED
 
     actual_number = 0
 
@@ -81,27 +87,57 @@ minefield = init_minefield()
 pygame.init()
 pygame.mixer.init()
 
-# Grafika!
-
-
-# Definice spritu
-
-
 # Nastaveni okna aj.
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("The Triple Jan Minesweeper :D")
 # table = load_tile_table()
 
+# Grafika!
+atomic_explosion_path = 'resources/images/atomic_bomb_explosion.png'
+
+# Definice spritu
+# atomic explosion
+sprites = [
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 0, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 0, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 0, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 0, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 0, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 233, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 233, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 233, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 233, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 233, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 465, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 465, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 465, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 465, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 465, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 697, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 697, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 697, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 697, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 697, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (321, 929, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (641, 929, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (961, 929, 320, 232), 1, 1, True, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 929, 320, 232), 1, 1, True, FRAMES)
+]
+
 # hodiny - FPS CLOCK / heart rate
 clock = pygame.time.Clock()
 
 # Kolecke spritů
-# my_sprites = pygame.sprite.Group()
-
+my_sprites = pygame.sprite.Group()
 
 # start:
 running = True
 
+# nastaveni animace
+sprites[0].iter()
+image = sprites[0].next()
+exploded = False
 # cyklus udrzujici okno v chodu
 while running:
     # FPS kontrola / jeslti bezi dle rychlosti!
@@ -138,13 +174,20 @@ while running:
 
     # Update
     # my_sprites.update()
+    my_sprites.update()
 
     # Render
-    screen.fill(BLACK)
-
-    render_result()
+    # screen.fill(BLACK)
+    # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
+    my_sprites.draw(screen)
+    if exploded:
+        image = sprites[0].next()
+        screen.blit(image, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
+    if not exploded:
+        render_result()
+    pygame.display.flip()
+    pygame.display.update()
 
     # my_sprites.draw(screen)
-    pygame.display.flip()
 
 pygame.quit()
