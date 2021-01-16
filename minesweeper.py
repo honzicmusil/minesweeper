@@ -1,8 +1,9 @@
-import random, size_mines_field
+import pygame
+import random
+import size_mines_field as smf
 from enum import Enum
 
 from data import sprite
-from pygame_functions import *
 
 
 # Pomocná třída enum na stav miny
@@ -24,29 +25,21 @@ RED = (202, 0, 42)
 BLUE = (80, 133, 188)
 GREY = (127, 127, 127)
 
-WINDOW_WIDTH = 610
-WINDOW_HEIGHT = 610
-
 MINE_SIZE = 30
 FPS = 60
 FRAMES = FPS / 1
 MARGIN = 5
 
-MINE_SIZE = 30
-MAX_WIDTH = 900
-MAX_HEIGHT = 800
-MIN_WIDTH = 610
-MIN_HEIGHT = 610
+MAX_WIDTH = 1200
+MAX_HEIGHT = 1200
+MIN_WIDTH = 600
+MIN_HEIGHT = 600
 
-count_games = 0
-lost_games = 0
-won_games = 0
+game_count = 0
+lost_game_count = 0
+win_game_count = 0
 
-get_game_opt = size_mines_field.get_games_option(MAX_WIDTH, MAX_HEIGHT, MINE_SIZE + MARGIN, MIN_WIDTH, MIN_HEIGHT)
-if type(get_game_opt) == tuple:
-    WINDOW_WIDTH = get_game_opt[0]
-    WINDOW_HEIGHT = get_game_opt[1]
-    NUMBER_OF_MINES = get_game_opt[2]
+WINDOW_WIDTH, WINDOW_HEIGHT, NUMBER_OF_MINES = smf.get_games_option(MAX_WIDTH, MAX_HEIGHT, MINE_SIZE + MARGIN, MIN_WIDTH, MIN_HEIGHT)
 
 ROW_RANGE = WINDOW_WIDTH // (MINE_SIZE + MARGIN)
 COLUMN_RANGE = WINDOW_HEIGHT // (MINE_SIZE + MARGIN)
@@ -97,8 +90,8 @@ def init_minefield():
 
     while actual_number != NUMBER_OF_MINES:
 
-        r = random.randrange(0, ROW_RANGE)
-        c = random.randrange(0, COLUMN_RANGE)
+        r = random.randrange(0, ROW_RANGE - 1)
+        c = random.randrange(0, COLUMN_RANGE - 1)
 
         if matrix[r][c] == MineFieldPositionStatus.HIDDEN:
             matrix[r][c] = MineFieldPositionStatus.MINE
@@ -112,8 +105,7 @@ def get_number_of_mines_around(minefield, row, column):
     for neighbor in NEAR_NEIGHBORHOOD:
         if len(minefield) > (row + neighbor[0]) >= 0 and len(minefield[0]) > (column + neighbor[1]) >= 0:
             if minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.MINE \
-                    or minefield[row + neighbor[0]][
-                column + neighbor[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
+                    or minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
                 count = count + 1
     return count
 
@@ -171,30 +163,29 @@ def game_intro():
 
         screen.fill(BLACK)
 
-        myfont = pygame.font.SysFont("None", 50)
-        myfont2 = pygame.font.SysFont("None", 25)
+        button_font = pygame.font.SysFont("None", 50)
+        statistic_font = pygame.font.SysFont("None", 25)
 
-        nadpis = myfont.render("Triple Jan MineSweeper", True, WHITE)
+        title = button_font.render("Triple Jan MineSweeper", True, WHITE)
 
-        statistika = myfont2.render(
-            "count games = " + str(count_games) + ", count won = " + str(won_games) + ", count lost = " + str(lost_games),
+        statistic = statistic_font.render(
+            "game count= " + str(game_count) + ", win count = " + str(win_game_count) + ", lose count = " + str(lost_game_count),
             True, WHITE)
 
-        new_game_inactive = myfont.render("NEW GAME", True, WHITE)
-        new_game_active = myfont.render("NEW GAME", True, RED)
+        new_game_inactive = button_font.render("NEW GAME", True, WHITE)
+        new_game_active = button_font.render("NEW GAME", True, RED)
 
-        quit_game_inactive = myfont.render("QUIT GAME", True, WHITE)
-        quit_game_active = myfont.render("QUIT GAME", True, RED)
+        quit_game_inactive = button_font.render("QUIT GAME", True, WHITE)
+        quit_game_active = button_font.render("QUIT GAME", True, RED)
 
-        titleText = screen.blit(nadpis, ((WINDOW_WIDTH / 2) - 200, 200))  # title is an image
+        title_text = screen.blit(title, ((WINDOW_WIDTH / 2) - 200, 200))  # title is an image
 
-        titleStatis = screen.blit(statistika, ((WINDOW_WIDTH / 2) - 180, 250))
+        title_statistic = screen.blit(statistic, ((WINDOW_WIDTH / 2) - 180, 250))
 
-        titleText.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
+        title_text.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
 
-        titleStatis.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
+        title_statistic.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
 
-        # button(x, y, w, h, inactive, active, action=None)
         button((WINDOW_WIDTH / 2) - 100, 300, 200, 35, new_game_active, new_game_inactive, new_game)
         button((WINDOW_WIDTH / 2) - 100, 350, 200, 35, quit_game_active, quit_game_inactive, quit_game)
         pygame.display.update()
@@ -202,7 +193,7 @@ def game_intro():
 
 def button(x, y, w, h, inactive, active, action=None):
     mouse = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
+    click = pygame.mouse.get_pressed(3)
 
     if x + w > mouse[0] > x and y + h > mouse[1] > y:
         screen.blit(active, (x, y))
@@ -213,8 +204,8 @@ def button(x, y, w, h, inactive, active, action=None):
 
 
 def new_game():
-    global count_games
-    count_games = +1
+    global game_count
+    game_count = +1
     run_game()
 
 
@@ -259,8 +250,6 @@ def run_game():
     # nastaveni animace
     sprites[0].iter()
     sprites[1].iter()
-    image = sprites[0].next()
-    image2 = sprites[1].next()
     is_exploded = False
     is_explode_sound_playing = False
     is_firework_sound_playing = False
@@ -297,16 +286,12 @@ def run_game():
                 if row >= ROW_RANGE or column >= COLUMN_RANGE:
                     continue
 
-                print("Position Clicked: {} Our array coordinates: row - {}, column - {} Button: {}".format(
-                    mouse_position,
-                    row, column,
-                    event.button))
                 if event.button == 1:
                     if minefield[row][column] == MineFieldPositionStatus.MINE:
                         is_explode_sound_playing = True
                         is_exploded = True
-                        global lost_games
-                        lost_games = +1
+                        global lost_game_count
+                        lost_game_count = +1
                     elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                         check_surrounding([row, column], minefield)
                 elif event.button == 3:
@@ -323,8 +308,8 @@ def run_game():
                         if is_last_deactivated:
                             is_win = True
                             is_firework_sound_playing = True
-                            global won_games
-                            won_games = + 1
+                            global win_game_count
+                            win_game_count = + 1
                     elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                         minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE
                     elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
@@ -338,6 +323,7 @@ def run_game():
         # Render
         my_sprites.draw(screen)
         if is_win:
+            render_result(minefield, is_exploded)
             try:
                 if is_firework_sound_playing:
                     pygame.mixer.music.load('resources/sounds/Fireworks.mp3')
@@ -345,7 +331,7 @@ def run_game():
                     is_firework_sound_playing = False
                 image2 = sprites[1].next()
                 screen.blit(image2, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
-            except StopIteration as e:
+            except StopIteration:
                 print("Animation stopped.")
                 pygame.time.delay(1000)
                 break
@@ -360,7 +346,7 @@ def run_game():
                 # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
                 image = sprites[0].next()
                 screen.blit(image, ((WINDOW_WIDTH / 2) - 124, (WINDOW_HEIGHT / 2) - 124))
-            except StopIteration as e:
+            except StopIteration:
                 print("Animation stopped.")
                 pygame.time.delay(1000)
                 break
@@ -368,8 +354,6 @@ def run_game():
             render_result(minefield, is_exploded)
         pygame.display.flip()
         pygame.display.update()
-
-        # my_sprites.draw(screen)
 
 
 game_intro()
