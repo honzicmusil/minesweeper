@@ -1,11 +1,10 @@
 import random
 from enum import Enum
 from tkinter import *
-from tkinter import messagebox
 
 import pygame
 
-import sprite
+from data import sprite
 
 
 # Pomocná třída enum na stav miny
@@ -31,7 +30,7 @@ WINDOW_HEIGHT = 610
 
 MINE_SIZE = 30
 FPS = 60
-FRAMES = FPS / 3
+FRAMES = FPS / 1
 MARGIN = 5
 NUMBER_OF_MINES = 20
 
@@ -135,35 +134,22 @@ font = pygame.font.SysFont('Arial', 20)
 
 # Grafika!
 atomic_explosion_path = 'resources/images/atomic_bomb_explosion.png'
+fireworks_path = 'resources/images/Firework.png'
 
 # Definice spritu
 # atomic explosion
 sprites = [
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 0, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 0, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 0, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 0, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 0, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 233, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 233, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 233, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 233, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 233, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 465, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 465, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 465, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 465, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 465, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 697, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 697, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 697, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 697, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 697, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (321, 929, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (641, 929, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (961, 929, 320, 232), 1, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (1281, 929, 320, 232), 1, 1, False, FRAMES)
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 0, 320, 232), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 233, 320, 232), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 465, 320, 232), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 697, 320, 232), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 5, 1, False, FRAMES),
+    sprite.SpriteStripAnim(fireworks_path, (0, 0, 256, 256), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(fireworks_path, (0, 257, 256, 256), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(fireworks_path, (0, 513, 256, 256), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(fireworks_path, (0, 769, 256, 256), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(fireworks_path, (0, 1025, 256, 256), 5, 1, False, FRAMES) +
+    sprite.SpriteStripAnim(fireworks_path, (0, 1281, 256, 256), 5, 1, False, FRAMES)
 ]
 
 # hodiny - FPS CLOCK / heart rate
@@ -177,9 +163,12 @@ running = True
 
 # nastaveni animace
 sprites[0].iter()
+sprites[1].iter()
 image = sprites[0].next()
+image2 = sprites[1].next()
 isExploded = False
 isExplodeSoundPlaying = False
+isWin = False
 # cyklus udrzujici okno v chodu
 while running:
     # FPS kontrola / jeslti bezi dle rychlosti!
@@ -203,7 +192,9 @@ while running:
             # přepočteme na souřadnice našeho pole
             row = mouse_position[1] // (MINE_SIZE + MARGIN)
             column = mouse_position[0] // (MINE_SIZE + MARGIN)
-            print("Position Clicked: {} Our array coordinates: row - {}, column - {} Button: {}".format(mouse_position, row, column, event.button))
+            print("Position Clicked: {} Our array coordinates: row - {}, column - {} Button: {}".format(mouse_position,
+                                                                                                        row, column,
+                                                                                                        event.button))
             if event.button == 1:
                 if minefield[row][column] == MineFieldPositionStatus.MINE:
                     # minefield[row][column] = MineFieldPositionStatus.BOOM
@@ -225,22 +216,30 @@ while running:
     # Render
     # screen.fill(BLACK)
     my_sprites.draw(screen)
+    # TODO implement switcher???
+    if isWin:
+        try:
+            image2 = sprites[1].next()
+            screen.blit(image2, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
+        except StopIteration as e:
+            # exploded = False
+            # TODO log.debug only?
+            print("Animation stopped.")
     if isExploded:
         try:
-            image = sprites[0].next()
-            # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
             if isExplodeSoundPlaying:
                 pygame.mixer.music.load('resources/sounds/Explosion3.wav')
                 pygame.mixer.music.play(0)
                 isExplodeSoundPlaying = False
+            # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
+            image = sprites[0].next()
             screen.blit(image, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
         except StopIteration as e:
             # exploded = False
             # TODO log.debug only?
             print("Animation stopped.")
-    if not isExploded:
+    if not isExploded | isWin:
         render_result()
-
     pygame.display.flip()
     pygame.display.update()
 
