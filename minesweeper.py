@@ -166,6 +166,7 @@ while running:
                 if minefield[row][column] == MineFieldPositionStatus.MINE:
                     minefield[row][column] = MineFieldPositionStatus.BOOM
                     Tk().wm_withdraw()  # to hide the main window
+                    exploded = True
                     messagebox.showinfo("Thats pity pal", "Booooooooooooooooooooooom!!!!")
                 else:
                     minefield[row][column] = MineFieldPositionStatus.CLICKED
@@ -178,10 +179,10 @@ while running:
 
     # Render
     # screen.fill(BLACK)
-    # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
     my_sprites.draw(screen)
     if exploded:
         image = sprites[0].next()
+        # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
         screen.blit(image, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
     if not exploded:
         render_result()
