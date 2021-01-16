@@ -177,7 +177,7 @@ def game_intro():
         nadpis = myfont.render("Triple Jan MineSweeper", True, WHITE)
 
         statistika = myfont2.render(
-            "count games = " + str(count_games) + ", count won = " + str(won_games) + ", count lost = " + str(lost_games),
+            "game counts = " + str(count_games) + ", won counts = " + str(won_games) + ", lose counts = " + str(lost_games),
             True, WHITE)
 
         new_game_inactive = myfont.render("NEW GAME", True, WHITE)
