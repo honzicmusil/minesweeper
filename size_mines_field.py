@@ -1,10 +1,10 @@
-def size_mines_field(max_width, max_heigth):
+def get_games_option(MAX_WIDTH, MAX_HEIGTH, MINE_SIZE, MIN_WIDTH, MIN_HEIGHT):
     # zeptá se uzivatele na velikost minového pole a počet min
     # vrací šířku, výšku pole a počet min
     # typ vracených hodnot je iteger
 
     import tkinter as tk
-    all_filled = False # proměná k otestování návratu, zda nebyl doalog ukončen dříve
+    all_filled = False  # proměná k otestování návratu, zda nebyl doalog ukončen dříve
 
     root = tk.Tk()
 
@@ -44,7 +44,7 @@ def size_mines_field(max_width, max_heigth):
         err_width = True
         try:
             int(width)
-            if (int(width) < 1) or (int(width) > max_width):
+            if (int(width) < MIN_WIDTH) or (int(width) > MAX_WIDTH):
                 err_width = True
             else:
                 err_width = False
@@ -52,7 +52,8 @@ def size_mines_field(max_width, max_heigth):
             err_width = True
 
         if err_width:
-            label5 = tk.Label(root, text="Please enter Width - the number in interval <1," + str(max_width) + "> ")
+            label5 = tk.Label(root, text="Please enter Width - the number in interval <" + str(MIN_WIDTH) + "," + str(
+                MAX_WIDTH) + "> ")
         else:
             label5 = tk.Label(root, text=200 * " ")
 
@@ -62,7 +63,7 @@ def size_mines_field(max_width, max_heigth):
         err_heigth = True
         try:
             int(heigth)
-            if (int(heigth) < 1) or (int(heigth) > max_heigth):
+            if (int(heigth) < MIN_HEIGHT) or (int(heigth) > MAX_HEIGTH):
                 err_heigth = True
             else:
                 err_heigth = False
@@ -70,7 +71,8 @@ def size_mines_field(max_width, max_heigth):
             err_heigth = True
 
         if err_heigth:
-            label6 = tk.Label(root, text="Please enter Heigth - the number in interval <1," + str(max_heigth) + "> ")
+            label6 = tk.Label(root, text="Please enter Heigth - the number in interval <" + str(MIN_HEIGHT) + "," + str(
+                MAX_HEIGTH) + "> ")
         else:
             label6 = tk.Label(root, text=200 * " ")
 
@@ -80,7 +82,7 @@ def size_mines_field(max_width, max_heigth):
         err_mines = True
         try:
             int(count_mines)
-            if (int(count_mines) < 1) or (int(count_mines) > int(heigth) * int(width)):
+            if (int(count_mines) < 1) or (int(count_mines) > ((int(heigth) // MINE_SIZE) * (int(width) // MINE_SIZE))):
                 err_mines = True
             else:
                 err_mines = False
@@ -88,8 +90,8 @@ def size_mines_field(max_width, max_heigth):
             err_mines = True
 
         if (not err_width and not err_heigth) and err_mines:
-            label7 = tk.Label(root, text="Please enter Count of mines - the number in interval <1," + str(
-                int(heigth) * int(width)) + "> ")
+            label7 = tk.Label(root, text="Please enter Count of mines - the number in interval <1,"
+                                         + str((int(heigth) // MINE_SIZE) * (int(width) // MINE_SIZE)) + "> ")
         else:
             label7 = tk.Label(root, text=200 * " ")
 
@@ -108,13 +110,4 @@ def size_mines_field(max_width, max_heigth):
     if all_filled:
         return (int(width), int(heigth), int(count_mines))
     else:
-        return ("")
-
-
-
-# zavolám dialog velikosti minového pole a vytisku co uživatel zadal
-# vstupní parametry jsou maximální rozměry minového pole
-# 1. - max šířka minového pole
-# 2. - max výška minového pole
-# 3. - počet min
-print(size_mines_field(800, 600))
+        return ("F")

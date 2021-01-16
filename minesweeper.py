@@ -1,5 +1,4 @@
-import random
-import size_mines_field
+import random, size_mines_field
 from enum import Enum
 
 from data import sprite
@@ -32,7 +31,22 @@ MINE_SIZE = 30
 FPS = 60
 FRAMES = FPS / 1
 MARGIN = 5
-NUMBER_OF_MINES = 20
+
+MINE_SIZE = 30
+MAX_WIDTH = 900
+MAX_HEIGHT = 800
+MIN_WIDTH = 610
+MIN_HEIGHT = 610
+
+count_games = 0
+lost_games = 0
+won_games = 0
+
+get_game_opt = size_mines_field.get_games_option(MAX_WIDTH, MAX_HEIGHT, MINE_SIZE + MARGIN, MIN_WIDTH, MIN_HEIGHT)
+if type(get_game_opt) == tuple:
+    WINDOW_WIDTH = get_game_opt[0]
+    WINDOW_HEIGHT = get_game_opt[1]
+    NUMBER_OF_MINES = get_game_opt[2]
 
 NEAR_NEIGHBORHOOD = [
     [-1, -1],
@@ -157,8 +171,13 @@ def game_intro():
         screen.fill(BLACK)
 
         myfont = pygame.font.SysFont("None", 50)
+        myfont2 = pygame.font.SysFont("None", 25)
 
         nadpis = myfont.render("Triple Jan MineSweeper", True, WHITE)
+
+        statistika = myfont2.render(
+            "count games = " + str(count_games) + ", count won = " + str(won_games) + ", count lost = " + str(lost_games),
+            True, WHITE)
 
         new_game_inactive = myfont.render("NEW GAME", True, WHITE)
         new_game_active = myfont.render("NEW GAME", True, RED)
@@ -166,13 +185,17 @@ def game_intro():
         quit_game_inactive = myfont.render("QUIT GAME", True, WHITE)
         quit_game_active = myfont.render("QUIT GAME", True, RED)
 
-        titleText = screen.blit(nadpis, ((WINDOW_WIDTH/2)-200, 200))  # title is an image
+        titleText = screen.blit(nadpis, ((WINDOW_WIDTH / 2) - 200, 200))  # title is an image
+
+        titleStatis = screen.blit(statistika, ((WINDOW_WIDTH / 2) - 180, 250))
 
         titleText.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
 
+        titleStatis.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
+
         # button(x, y, w, h, inactive, active, action=None)
-        button((WINDOW_WIDTH/2)-100, 300, 200, 35, new_game_active, new_game_inactive, new_game)
-        button((WINDOW_WIDTH/2)-100, 350, 200, 35, quit_game_active, quit_game_inactive, quit_game)
+        button((WINDOW_WIDTH / 2) - 100, 300, 200, 35, new_game_active, new_game_inactive, new_game)
+        button((WINDOW_WIDTH / 2) - 100, 350, 200, 35, quit_game_active, quit_game_inactive, quit_game)
         pygame.display.update()
 
 
@@ -189,6 +212,8 @@ def button(x, y, w, h, inactive, active, action=None):
 
 
 def new_game():
+    global count_games
+    count_games = +1
     run_game()
 
 
@@ -273,6 +298,8 @@ def run_game():
                     if minefield[row][column] == MineFieldPositionStatus.MINE:
                         is_explode_sound_playing = True
                         is_exploded = True
+                        global lost_games
+                        lost_games = +1
                     elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                         check_surrounding([row, column], minefield)
                 elif event.button == 3:
@@ -289,6 +316,8 @@ def run_game():
                         if is_last_deactivated:
                             is_win = True
                             is_firework_sound_playing = True
+                            global won_games
+                            won_games = + 1
                     elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                         minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE
                     elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
