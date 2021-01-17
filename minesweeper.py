@@ -121,8 +121,11 @@ def init_minefield():
     # Cyklem náhodně zasadíme do pole miny, tak aby jich byl žádaný počet
     while actual_number != NUMBER_OF_MINES:
 
-        r = random.randrange(0, ROW_RANGE - 1)
-        c = random.randrange(0, COLUMN_RANGE - 1)
+        r = random.randrange(1, ROW_RANGE - 1)
+        c = random.randrange(1, COLUMN_RANGE - 1)
+
+        if r >= ROW_RANGE or c >= COLUMN_RANGE:
+            continue
 
         if matrix[r][c] == MineFieldPositionStatus.HIDDEN:
             matrix[r][c] = MineFieldPositionStatus.MINE
