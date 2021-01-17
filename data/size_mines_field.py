@@ -3,6 +3,7 @@ def get_games_option(MAX_WIDTH, MAX_HEIGTH, MINE_SIZE, MIN_WIDTH, MIN_HEIGHT):
     # vrací šířku, výšku pole a počet min
     # typ vracených hodnot je iteger
 
+    #GUI interface
     import tkinter as tk
     all_filled = False  # proměná k otestování návratu, zda nebyl doalog ukončen dříve
 
@@ -42,11 +43,13 @@ def get_games_option(MAX_WIDTH, MAX_HEIGTH, MINE_SIZE, MIN_WIDTH, MIN_HEIGHT):
 
         # kontrola šířky číslo > 0 a menší než max
         err_width = True
-        try:
+        try: # zkusím převést na Integer
             int(width)
+            # test zda he vstup v daných mezích
             if (int(width) < MIN_WIDTH) or (int(width) > MAX_WIDTH):
                 err_width = True
             else:
+                # vstup není převoditelný na integer - informaci dám do proměné
                 err_width = False
         except:
             err_width = True
@@ -77,16 +80,19 @@ def get_games_option(MAX_WIDTH, MAX_HEIGTH, MINE_SIZE, MIN_WIDTH, MIN_HEIGHT):
 
         canvas1.create_window(200, 170, window=label6)
 
-        # kontrola počtu min číslo > 0 a menší než (šířka x výška)
+        # kontrola počtu min číslo > 0 a menší než počet políček minového pole
         err_mines = True
         try:
+            # kontroliji dané meze
             if (int(count_mines) < 1) or (int(count_mines) > ((int(height) // MINE_SIZE) * (int(width) // MINE_SIZE))):
                 err_mines = True
             else:
                 err_mines = False
         except:
+            # chyba vstup není převoditelný na integer
             err_mines = True
 
+        # příprava toho co vypíši ohledně počtu min na formulář
         if (not err_width and not err_height) and err_mines:
             label7 = tk.Label(root, text="Please enter Count of mines - the number in interval <1,"
                                          + str((int(height) // MINE_SIZE) * (int(width) // MINE_SIZE)) + "> ")
@@ -95,9 +101,10 @@ def get_games_option(MAX_WIDTH, MAX_HEIGTH, MINE_SIZE, MIN_WIDTH, MIN_HEIGHT):
 
         canvas1.create_window(200, 190, window=label7)
 
+        # test zda bylo vše vyplňeno vpořádku
         if not err_width and not err_height and not err_mines:
             all_filled = True
-            print("OK ", width, height, count_mines)
+            # ukončení formuláře
             root.destroy()
 
     button1 = tk.Button(text='OK', command=check_area)
@@ -105,5 +112,7 @@ def get_games_option(MAX_WIDTH, MAX_HEIGTH, MINE_SIZE, MIN_WIDTH, MIN_HEIGHT):
 
     root.mainloop()
 
+    # test zda vše bylo vyplňeno
     if all_filled:
+        # vrácení vstupních patametu minového pole
         return int(width), int(height), int(count_mines)
