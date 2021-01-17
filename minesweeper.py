@@ -1,8 +1,9 @@
-import pygame
 import random
-import size_mines_field as smf
 from enum import Enum
 
+import pygame
+
+import size_mines_field as smf
 from data import sprite
 
 
@@ -39,7 +40,24 @@ game_count = 0
 lost_game_count = 0
 win_game_count = 0
 
-WINDOW_WIDTH, WINDOW_HEIGHT, NUMBER_OF_MINES = smf.get_games_option(MAX_WIDTH, MAX_HEIGHT, MINE_SIZE + MARGIN, MIN_WIDTH, MIN_HEIGHT)
+
+def increment_games():
+    global game_count
+    game_count = game_count + 1
+
+
+def increment_lost_games():
+    global lost_game_count
+    lost_game_count = lost_game_count + 1
+
+
+def increment_win_games():
+    global win_game_count
+    win_game_count = win_game_count + 1
+
+
+WINDOW_WIDTH, WINDOW_HEIGHT, NUMBER_OF_MINES = smf.get_games_option(MAX_WIDTH, MAX_HEIGHT, MINE_SIZE + MARGIN,
+                                                                    MIN_WIDTH, MIN_HEIGHT)
 
 ROW_RANGE = WINDOW_WIDTH // (MINE_SIZE + MARGIN)
 COLUMN_RANGE = WINDOW_HEIGHT // (MINE_SIZE + MARGIN)
@@ -105,7 +123,8 @@ def get_number_of_mines_around(minefield, row, column):
     for neighbor in NEAR_NEIGHBORHOOD:
         if len(minefield) > (row + neighbor[0]) >= 0 and len(minefield[0]) > (column + neighbor[1]) >= 0:
             if minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.MINE \
-                    or minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
+                    or minefield[row + neighbor[0]][
+                column + neighbor[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
                 count = count + 1
     return count
 
@@ -169,7 +188,8 @@ def game_intro():
         title = button_font.render("Triple Jan MineSweeper", True, WHITE)
 
         statistic = statistic_font.render(
-            "game count= " + str(game_count) + ", win count = " + str(win_game_count) + ", lose count = " + str(lost_game_count),
+            "game count= " + str(game_count) + ", win count = " + str(win_game_count) + ", lose count = " + str(
+                lost_game_count),
             True, WHITE)
 
         new_game_inactive = button_font.render("NEW GAME", True, WHITE)
@@ -204,8 +224,7 @@ def button(x, y, w, h, inactive, active, action=None):
 
 
 def new_game():
-    global game_count
-    game_count = +1
+    increment_games()
     run_game()
 
 
@@ -290,8 +309,7 @@ def run_game():
                     if minefield[row][column] == MineFieldPositionStatus.MINE:
                         is_explode_sound_playing = True
                         is_exploded = True
-                        global lost_game_count
-                        lost_game_count = +1
+                        increment_lost_games()
                     elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                         check_surrounding([row, column], minefield)
                 elif event.button == 3:
@@ -308,8 +326,7 @@ def run_game():
                         if is_last_deactivated:
                             is_win = True
                             is_firework_sound_playing = True
-                            global win_game_count
-                            win_game_count = + 1
+                            increment_win_games()
                     elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
                         minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE
                     elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
