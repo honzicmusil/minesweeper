@@ -28,7 +28,7 @@ GREY = (127, 127, 127)
 
 MINE_SIZE = 30
 FPS = 60
-FRAMES = FPS / 1
+FRAMES = FPS / 15
 MARGIN = 5
 
 MAX_WIDTH = 1200
@@ -277,7 +277,6 @@ def run_game():
     # velikostPole = otazkaVelikostPole.velikostPole(WINDOW_WIDTH, WINDOW_HEIGHT)
     # cyklus udrzujici okno v chodu
     while running:
-        # game_menu.game_intro(screen)
         # FPS kontrola / jeslti bezi dle rychlosti!
         clock.tick(FPS)
 
@@ -360,7 +359,6 @@ def run_game():
                     pygame.mixer.music.load('resources/sounds/Explosion3.wav')
                     pygame.mixer.music.play(0)
                     is_explode_sound_playing = False
-                # TODO vyhodit velikost obrazku / animace???? Nekam do konstant
                 image = sprites[0].next()
                 screen.blit(image, ((WINDOW_WIDTH / 2) - 124, (WINDOW_HEIGHT / 2) - 124))
             except StopIteration:
