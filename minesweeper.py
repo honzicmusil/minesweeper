@@ -1,13 +1,12 @@
+import pygame
 import random
 from enum import Enum
-
-import pygame
 
 import size_mines_field as smf
 from data import sprite
 
 
-# Pomocná třída enum na stav miny
+# Pomocná třída enum na reprezentaci stavu miny
 class MineFieldPositionStatus(Enum):
     HIDDEN = -1
     EMPTY = -2
@@ -17,7 +16,7 @@ class MineFieldPositionStatus(Enum):
     MINE = -6
 
 
-# konstanty a fce které neinteragují s pygame!
+# konstanty
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (18, 173, 42)
@@ -56,12 +55,15 @@ def increment_win_games():
     win_game_count = win_game_count + 1
 
 
+# Získání vlastností, šířka, výška a počet min z úvodního pole
 WINDOW_WIDTH, WINDOW_HEIGHT, NUMBER_OF_MINES = smf.get_games_option(MAX_WIDTH, MAX_HEIGHT, MINE_SIZE + MARGIN,
                                                                     MIN_WIDTH, MIN_HEIGHT)
 
+# Výpočet počtu políček pole
 ROW_RANGE = WINDOW_WIDTH // (MINE_SIZE + MARGIN)
 COLUMN_RANGE = WINDOW_HEIGHT // (MINE_SIZE + MARGIN)
 
+# seznam bodů pro prohledání blízkého okolí
 NEAR_NEIGHBORHOOD = [
     [-1, -1],
     [-1, 0],
@@ -74,31 +76,42 @@ NEAR_NEIGHBORHOOD = [
 ]
 
 
+# rekurzivní metoda která zkontroluje zda se vstupní políčko nachází v blízkosti nějaké z min.
+
 def check_surrounding(cell, matrix):
+    # flag který určuje zda dané políčko má v oklí nějakou minu
     is_surrounded = False
+    # procházíme celé okolí jednoho políčka
     for move in NEAR_NEIGHBORHOOD:
+        # kontrola zda není vypočtený bod mimo souřadnice
         if len(matrix) > (cell[0] + move[0]) > 0 and len(matrix[0]) > (cell[1] + move[1]) > 0:
+            # pokud je nějaký soused označený jako mina nebo oflegovaný a byl minou.
+            # označíme políčko jako blízké okolí miny a nastavíme flag
             if matrix[cell[0] + move[0]][cell[1] + move[1]] == MineFieldPositionStatus.MINE \
                     or matrix[cell[0] + move[0]][cell[1] + move[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
                 matrix[cell[0]][cell[1]] = MineFieldPositionStatus.CLICKED
                 is_surrounded = True
 
+    # pokud políčko má volné okolí a souřadnice je v rozsahu pole a navíc není označeno jako prázdné nebo blízké okolí miny
+    # označíme ho jako prázdné
     if not is_surrounded and len(matrix) > (cell[0]) >= 0 and len(matrix[0]) > (cell[1]) >= 0 \
             and matrix[cell[0]][cell[1]] != MineFieldPositionStatus.EMPTY \
             and matrix[cell[0]][cell[1]] != MineFieldPositionStatus.CLICKED:
 
         matrix[cell[0]][cell[1]] = MineFieldPositionStatus.EMPTY
 
+        # Rekurzivním algoritmem zavoláme všechna okolní políčka a provedeme rekurzi
         for move in NEAR_NEIGHBORHOOD:
             if len(matrix) > (cell[0] + move[0]) >= 0 and len(matrix[0]) > (cell[1] + move[1]) >= 0:
                 target = [cell[0] + move[0], cell[1] + move[1]]
                 check_surrounding(target, matrix)
 
 
-# fce které interagují s pygame!
+# metoda která náhodně zinicializuje hrací plochu
 def init_minefield():
     matrix = []
 
+    # všechna políčka nasvíme jako zkrytá
     for row in range(ROW_RANGE):
         matrix.append([])
         for column in range(COLUMN_RANGE):
@@ -106,6 +119,7 @@ def init_minefield():
 
     actual_number = 0
 
+    # Cyklem náhodně zasadíme do pole miny, tak aby jich byl žádaný počet
     while actual_number != NUMBER_OF_MINES:
 
         r = random.randrange(0, ROW_RANGE - 1)
@@ -118,17 +132,18 @@ def init_minefield():
     return matrix
 
 
+# Metoda který vraci počet min která se nacházejí v okolí vstupních souřadnic
 def get_number_of_mines_around(minefield, row, column):
     count = 0
     for neighbor in NEAR_NEIGHBORHOOD:
         if len(minefield) > (row + neighbor[0]) >= 0 and len(minefield[0]) > (column + neighbor[1]) >= 0:
             if minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.MINE \
-                    or minefield[row + neighbor[0]][
-                column + neighbor[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
+                    or minefield[row + neighbor[0]][column + neighbor[1]] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
                 count = count + 1
     return count
 
 
+# Metoda, která vykresluje herní plochu na základě vnítřní hodnoty jednotlivých políček
 def render_result(minefield, is_exploded):
     # procházíme celou matici a podle vnitřní hodnoty nastavujeme barvu k vykreslení
     for row in range(ROW_RANGE):
@@ -144,6 +159,7 @@ def render_result(minefield, is_exploded):
             elif minefield[row][column] == MineFieldPositionStatus.MINE and is_exploded:
                 color = RED
 
+            # pak už jen necháme vykreslit
             pygame.draw.rect(screen,
                              color,
                              [(MARGIN + MINE_SIZE) * column + MARGIN,
@@ -151,12 +167,54 @@ def render_result(minefield, is_exploded):
                               MINE_SIZE,
                               MINE_SIZE])
 
+    # nakonec projdeme herní plochu ještě jednou a vložíme číslo o počtu min na políčka která jsou v jejich blízkosti
     for row in range(ROW_RANGE):
         for column in range(COLUMN_RANGE):
             if minefield[row][column] == MineFieldPositionStatus.CLICKED:
                 text = font.render(str(get_number_of_mines_around(minefield, row, column)), False, BLACK)
                 screen.blit(text,
                             ((MARGIN + MINE_SIZE) * column + MARGIN + 11, (MARGIN + MINE_SIZE) * row + MARGIN + 3))
+
+
+# metoda která nastavuje a odebírá vlajky na kliknutých políčkách
+def handle_flagging(column, is_firework_sound_playing, is_win, minefield, row):
+    # pokud byla zaflegována mina
+    if minefield[row][column] == MineFieldPositionStatus.MINE:
+        minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_MINE
+        is_last_deactivated = True
+
+        # dojde ke kontrole zda jsou ještě nějaké miny neoflagované
+        for row in range(ROW_RANGE):
+            for column in range(COLUMN_RANGE):
+                if minefield[row][column] == MineFieldPositionStatus.MINE \
+                        or minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
+                    is_last_deactivated = False
+
+        # pokud je vše již objeveno, dojde k nastavení parametrů pro výhru a animaci
+        if is_last_deactivated:
+            is_win = True
+            is_firework_sound_playing = True
+            increment_win_games()
+    elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
+        minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE
+    elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
+        minefield[row][column] = MineFieldPositionStatus.HIDDEN
+    elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
+        minefield[row][column] = MineFieldPositionStatus.MINE
+    return is_firework_sound_playing, is_win
+
+
+# metoda která spravuje akce se stiskem levého tlačítka
+def handle_searching(column, is_explode_sound_playing, is_exploded, minefield, row):
+    # pokud bylo kliknuto na políčko s minou, dojde k výbuchu
+    if minefield[row][column] == MineFieldPositionStatus.MINE:
+        is_explode_sound_playing = True
+        is_exploded = True
+        increment_lost_games()
+    # pokud bylo kliknuto na prázdné políčko, dojde k prohledání okolí
+    elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
+        check_surrounding([row, column], minefield)
+    return is_explode_sound_playing, is_exploded
 
 
 # Start pygame + start modulů!
@@ -295,43 +353,25 @@ def run_game():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # sebereme pozici myši po kliku
                 mouse_position = pygame.mouse.get_pos()
-                # přepočteme na souřadnice našeho pole
+
+                # Pokud bylo kliknuto mimo obrazovku, přeskočíme kmyt
                 if mouse_position[1] >= WINDOW_WIDTH or mouse_position[0] >= WINDOW_HEIGHT:
                     continue
+
+                # přepočteme na souřadnice našeho pole
                 row = mouse_position[1] // (MINE_SIZE + MARGIN)
                 column = mouse_position[0] // (MINE_SIZE + MARGIN)
 
+                # pokud je kliknuto mimo výseč, přeskočíme kmyt
                 if row >= ROW_RANGE or column >= COLUMN_RANGE:
                     continue
 
+                # stisk levého tlačítka myši
                 if event.button == 1:
-                    if minefield[row][column] == MineFieldPositionStatus.MINE:
-                        is_explode_sound_playing = True
-                        is_exploded = True
-                        increment_lost_games()
-                    elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
-                        check_surrounding([row, column], minefield)
+                    is_explode_sound_playing, is_exploded = handle_searching(column, is_explode_sound_playing, is_exploded, minefield, row)
+                # stisk pravého tlačítka myši
                 elif event.button == 3:
-                    if minefield[row][column] == MineFieldPositionStatus.MINE:
-                        minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_MINE
-                        is_last_deactivated = True
-
-                        for row in range(ROW_RANGE):
-                            for column in range(COLUMN_RANGE):
-                                if minefield[row][column] == MineFieldPositionStatus.MINE \
-                                        or minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
-                                    is_last_deactivated = False
-
-                        if is_last_deactivated:
-                            is_win = True
-                            is_firework_sound_playing = True
-                            increment_win_games()
-                    elif minefield[row][column] == MineFieldPositionStatus.HIDDEN:
-                        minefield[row][column] = MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE
-                    elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_NOT_MINE:
-                        minefield[row][column] = MineFieldPositionStatus.HIDDEN
-                    elif minefield[row][column] == MineFieldPositionStatus.FLAGGED_AND_WAS_MINE:
-                        minefield[row][column] = MineFieldPositionStatus.MINE
+                    is_firework_sound_playing, is_win = handle_flagging(column, is_firework_sound_playing, is_win, minefield, row)
 
         # Update
         my_sprites.update()
