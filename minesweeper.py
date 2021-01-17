@@ -296,19 +296,10 @@ fireworks_path = 'resources/images/Firework.png'
 
 # Definice spritu
 # atomic explosion
+# ve finkci SpriteStripAnim je cela logika nacitani obrazku do listu.
 sprites = [
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 0, 320, 232), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 233, 320, 232), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 465, 320, 232), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 697, 320, 232), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 929, 320, 232), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(atomic_explosion_path, (0, 1161, 320, 232), 5, 1, False, FRAMES),
-    sprite.SpriteStripAnim(fireworks_path, (0, 0, 256, 256), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(fireworks_path, (0, 257, 256, 256), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(fireworks_path, (0, 513, 256, 256), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(fireworks_path, (0, 769, 256, 256), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(fireworks_path, (0, 1025, 256, 256), 5, 1, False, FRAMES) +
-    sprite.SpriteStripAnim(fireworks_path, (0, 1281, 256, 256), 5, 1, False, FRAMES)
+    sprite.SpriteStripAnim(atomic_explosion_path, (0, 0, 320, 232), 5, 6, 1, False, FRAMES),
+    sprite.SpriteStripAnim(fireworks_path, (0, 0, 256, 256), 5, 5, 1, False, FRAMES)
 ]
 
 # hodiny - FPS CLOCK / heart rate

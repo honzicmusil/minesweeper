@@ -2,6 +2,20 @@ import pygame
 
 
 class Sprite(pygame.sprite.Sprite):
+    """Třída Sprite s podpůrnými funkcemi
+
+    - image_at(rectangle, colorkey) - nahraje obrazek na zadanych souradnicich + offset e.g. (0,0,320,320)
+                                    - colorkey - parametr predavany funkci set_colorkey na pruhlednost barvy
+
+    -images_at() - nahraje serii obrázků v řádku stejných velikostí
+                 - e.g. images_at((0, 0, 320, 232),(320, 0, 320, 232))
+    - load_strips(rect) - nahraje vsechny obrazky ze spritesheetu dle zadanych parametru
+                  - rect - misto a velikost prvniho obrazku
+                  - column_count - pocet opakovani obrazku v radku
+                  - row_count - pocet opakovani v radcich
+
+     """
+
     def __init__(self, filename):
         try:
             self.sheet = pygame.image.load(filename).convert()
@@ -9,9 +23,8 @@ class Sprite(pygame.sprite.Sprite):
             print('Unable to load spritesheet image:', filename)
             raise SystemExit(message)
 
-    # Load a specific image from a specific rectangle
+    # nahraje obrazek na zadanych souradnicich
     def image_at(self, rectangle, colorkey=None):
-        "Loads image from x,y,x+offset,y+offset"
         rect = pygame.Rect(rectangle)
         image = pygame.Surface(rect.size).convert()
         image.blit(self.sheet, (0, 0), rect)
@@ -21,60 +34,63 @@ class Sprite(pygame.sprite.Sprite):
             image.set_colorkey(colorkey, pygame.RLEACCEL)
         return image
 
-    # Load a whole bunch of images and return them as a list
+    # nahraje serii obrázků v řádku stejných velikostí
     def images_at(self, rects, colorkey=None):
-        "Loads multiple images, supply a list of coordinates"
         return [self.image_at(rect, colorkey) for rect in rects]
 
-    # Load a whole strip of images
-    def load_strip(self, rect, image_count, colorkey=None):
-        "Loads a strip of images and returns them as a list"
-        tups = [(rect[0] + rect[2] * x, rect[1], rect[2], rect[3])
-                for x in range(image_count)]
+    # nahraje vsechny obrazky ze spritesheetu dle zadanych parametru
+    def load_strips(self, rect, column_count, row_count, colorkey=None):
+        tups = []
+        for row in range(row_count):
+            tups = tups + [(rect[0] + rect[2] * x, rect[1] + rect[3] * row, rect[2], rect[3])
+                           for x in range(column_count)]
         return self.images_at(tups, colorkey)
 
 
 class SpriteStripAnim(object):
-    """sprite strip animator
+    """
+    Trida, ktera iteruje skrz seznam obrazku a tim vytvari animaci.
 
-    This class provides an iterator (iter() and next() methods), and a
-    __add__() method for joining strips which comes in handy when a
-    strip wraps to the next row.
     """
 
-    def __init__(self, filename, rect, count, colorkey=None, loop=False, frames=1):
-        """construct a SpriteStripAnim
+    def __init__(self, filename, rect, column_count, row_count, colorkey=None, loop=False, frames=1):
+        """
+        filename - cesta na spritesheet
+        rect - souradnice a velikost prvniho obrazku e.g.(0, 0, 320, 232)
+        column_count - pocet obrazku v jednom radku
+        row_count - pocet radku ve spritesheetu
+        colorkey -  nastaveni pruhlednosti barvy
 
-        filename, rect, count, and colorkey are the same arguments used
-        by spritesheet.load_strip.
+        loop - boolean, jestli se ma animace po prvnim prehrani opakovat nebo ne.
 
-        loop is a boolean that, when True, causes the next() method to
-        loop. If False, the terminal case raises StopIteration.
-
-        frames is the number of ticks to return the same image before
-        the iterator advances to the next image.
+        frames - pocet obrazku (tiku) nez se prejde na dalsi obrazek. Ovlivnuje rychlost prehravani animace
         """
         self.filename = filename
         ss = Sprite(filename)
-        self.images = ss.load_strip(rect, count, colorkey)
+        self.images = ss.load_strips(rect, column_count, row_count, colorkey)
         self.i = 0
         self.loop = loop
         self.frames = frames
         self.f = frames
 
+    # Nastaveni iterace na zacatek animace
     def iter(self):
         self.i = 0
         self.f = self.frames
         return self
 
+    # Posunem o jeden tik
     def next(self):
+        # Pokud jsme s animaci nakonci, nastavime bud zase zacatek, nebo vyhodime konec iterace pro zastaveni prehravani.
         if self.i >= len(self.images):
             if not self.loop:
                 raise StopIteration
             else:
                 self.i = 0
         image = self.images[self.i]
+        # snizime pocet frame o jeden - rychlost animace
         self.f -= 1
+        # pokud jsme na frames na nule, zvysime obrazek o jeden - zmena obrazku v animaci.
         if self.f <= 0:
             self.i += 1
             self.f = self.frames
