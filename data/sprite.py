@@ -55,15 +55,14 @@ class SpriteStripAnim(object):
 
     def __init__(self, filename, rect, column_count, row_count, colorkey=None, loop=False, frames=1):
         """
-        filename - cesta na spritesheet
-        rect - souradnice a velikost prvniho obrazku e.g.(0, 0, 320, 232)
-        column_count - pocet obrazku v jednom radku
-        row_count - pocet radku ve spritesheetu
-        colorkey -  nastaveni pruhlednosti barvy
 
-        loop - boolean, jestli se ma animace po prvnim prehrani opakovat nebo ne.
-
-        frames - pocet obrazku (tiku) nez se prejde na dalsi obrazek. Ovlivnuje rychlost prehravani animace
+        :param filename: cesta na spritesheet
+        :param rect: souradnice a velikost prvniho obrazku e.g.(0, 0, 320, 232)
+        :param column_count: pocet obrazku v jednom radku
+        :param row_count: pocet radku ve spritesheetu
+        :param colorkey: nastaveni pruhlednosti barvy
+        :param loop: boolean, jestli se ma animace po prvnim prehrani opakovat nebo ne.
+        :param frames: pocet obrazku (tiku) nez se prejde na dalsi obrazek. Ovlivnuje rychlost prehravani animace
         """
         self.filename = filename
         ss = Sprite(filename)

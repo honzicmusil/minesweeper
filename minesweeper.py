@@ -227,7 +227,7 @@ pygame.display.set_caption("The Triple Jan Minesweeper :D")
 font = pygame.font.SysFont('Arial', 20)
 
 
-# table = load_tile_table()
+# Funkce, ktera vykresli MENU
 def game_intro():
     intro = True
 
@@ -239,6 +239,7 @@ def game_intro():
 
         screen.fill(BLACK)
 
+        # Fonty jsou po vytvoreni nemenne, proto pro Tlacitka a statisticka data zvolime rozdilnou velikost
         button_font = pygame.font.SysFont("None", 50)
         statistic_font = pygame.font.SysFont("None", 25)
 
@@ -249,26 +250,42 @@ def game_intro():
                 lost_game_count),
             True, WHITE)
 
+        # Tlacitka pro Novou hru
         new_game_inactive = button_font.render("NEW GAME", True, WHITE)
         new_game_active = button_font.render("NEW GAME", True, RED)
 
+        # Tlacitka pro quit
         quit_game_inactive = button_font.render("QUIT GAME", True, WHITE)
         quit_game_active = button_font.render("QUIT GAME", True, RED)
 
+        # blitnuti - vlozeni obrazku do obrazovky.
         title_text = screen.blit(title, ((WINDOW_WIDTH / 2) - 200, 200))  # title is an image
 
         title_statistic = screen.blit(statistic, ((WINDOW_WIDTH / 2) - 180, 250))
-
         title_text.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
-
         title_statistic.center = ((WINDOW_WIDTH / 2), (WINDOW_HEIGHT / 2))
 
+        # Vlozeni  buttonu do obrazovky.
+        # pouziti v popisu funkce nize
         button((WINDOW_WIDTH / 2) - 100, 300, 200, 35, new_game_active, new_game_inactive, new_game)
         button((WINDOW_WIDTH / 2) - 100, 350, 200, 35, quit_game_active, quit_game_inactive, quit_game)
         pygame.display.update()
 
 
 def button(x, y, w, h, inactive, active, action=None):
+    """
+    Tlacitko, ktere vola funkci
+
+    :param x: Souradnice x
+    :param y: Souradnice y
+    :param w: Sirka tlacitka
+    :param h: Vyska tlacitka
+    :param inactive: Vyrendrovany Surface pro inactive button
+    :param active: Vyrendrovany Surface pro active button
+    :param action: Volana funkce
+
+    e.g.
+    """
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed(3)
 
@@ -280,11 +297,13 @@ def button(x, y, w, h, inactive, active, action=None):
         screen.blit(inactive, (x, y))
 
 
+# volana funkce po stisknuti tlacitka New Game
 def new_game():
     increment_games()
     run_game()
 
 
+# volana funkce po stisknuti tlacitka Quit game
 def quit_game():
     quit()
 
@@ -371,12 +390,15 @@ def run_game():
         if is_win:
             render_result(minefield, is_exploded)
             try:
+                # Pokud jsme vyhrali, je hodnota True a prehrajeme zvuk s animaci
                 if is_firework_sound_playing:
                     pygame.mixer.music.load('resources/sounds/Fireworks.mp3')
                     pygame.mixer.music.play(0)
                     is_firework_sound_playing = False
+                # Vybereme animaci v poli definovanou vyse a prehrajem
                 image2 = sprites[1].next()
                 screen.blit(image2, ((WINDOW_WIDTH / 2) - 160, (WINDOW_HEIGHT / 2) - 116))
+            # Odchytime vyhazovanou vyjimku a pockame jednu sekundu pred navratem do menu
             except StopIteration:
                 print("Animation stopped.")
                 pygame.time.delay(1000)
@@ -384,13 +406,15 @@ def run_game():
         if is_exploded:
             try:
                 render_result(minefield, is_exploded)
-
+                # Pokud jsme explodovali, je hodnota True a prehrajeme zvuk s animaci
                 if is_explode_sound_playing:
                     pygame.mixer.music.load('resources/sounds/Explosion3.wav')
                     pygame.mixer.music.play(0)
                     is_explode_sound_playing = False
+                # Vybereme animaci v poli definovanou vyse a prehrajem
                 image = sprites[0].next()
                 screen.blit(image, ((WINDOW_WIDTH / 2) - 124, (WINDOW_HEIGHT / 2) - 124))
+            # Odchytime vyhazovanou vyjimku a pockame jednu sekundu pred navratem do menu
             except StopIteration:
                 print("Animation stopped.")
                 pygame.time.delay(1000)
