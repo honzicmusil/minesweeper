@@ -2,8 +2,7 @@ import pygame
 import random
 from enum import Enum
 
-import size_mines_field as smf
-from data import sprite
+from data import sprite, size_mines_field as smf
 
 
 # Pomocná třída enum na reprezentaci stavu miny
